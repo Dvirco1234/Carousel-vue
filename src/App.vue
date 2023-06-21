@@ -1,5 +1,6 @@
 <template>
   <AppHeader />
+  <!-- <MainCarousel :isAuto="true" :transition="0.8"/> -->
   <MainCarousel />
 </template>
   <script setup lang="ts">

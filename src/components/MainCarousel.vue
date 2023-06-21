@@ -7,33 +7,35 @@
                     :class="{ show: currIdx === idx, hide: currIdx !== idx, 'hide-before': idx < currIdx, 'hide-after': idx > currIdx, first: !idx, last: idx === imgs.length - 1, 'no-trasition': isEnd }">
             </li>
         </ul>
+        <div class="btns flex">
+            <div v-for="(img, idx) in imgsFormat" :key="img.url">
+                <div @click="selectImg(idx)" class="btn" :class="{ 'curr-btn': currIdx === idx }">
+                    <!-- {{ idx + 1 }} -->
+                </div>
+            </div>
+        </div>
+        <div class="arrows flex space-between">
+            <div class="arrow" @click="toLeft()">
+                <svg style="rotate: 90deg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="m12 15.375-6-6 1.4-1.4 4.6 4.6 4.6-4.6 1.4 1.4Z" fill="black" />
+                </svg>
+            </div>
+            <div class="arrow" @click="toRight()">
+                <svg style="rotate: 270deg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="m12 15.375-6-6 1.4-1.4 4.6 4.6 4.6-4.6 1.4 1.4Z" fill="black" />
+                </svg>
+            </div>
+        </div>
     </section>
-    <div class="flex">
-        <div v-for="(img, idx) in imgsFormat" :key="img.url">
-            <button @click="selectImg(idx)" :class="{ 'curr-btn': currIdx === idx }">{{ idx + 1 }}</button>
-        </div>
-    </div>
-    <div class="arrows flex">
-        <div class="arrow" @click="toLeft()">
-            <svg style="rotate: 90deg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <path d="m12 15.375-6-6 1.4-1.4 4.6 4.6 4.6-4.6 1.4 1.4Z" fill="black" />
-            </svg>
-        </div>
-        <div class="arrow" @click="toRight()">
-            <svg style="rotate: 270deg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <path d="m12 15.375-6-6 1.4-1.4 4.6 4.6 4.6-4.6 1.4 1.4Z" fill="black" />
-            </svg>
-        </div>
-    </div>
-    {{ currIdx }}
 </template>
 
 <script setup lang="ts">
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+
 interface Img {
     url: string
 }
 
-import { ref, computed } from 'vue'
 // const props = defineProps({
 //     imgs: {
 //         type: Array,
@@ -52,14 +54,18 @@ import { ref, computed } from 'vue'
 //         default: false,
 //     },
 // }>()
-export interface Props {
+interface Props {
     imgs: Img[]
     isAuto: boolean
+    interval: number
+    transition: number
 }
 
-const props = withDefaults(defineProps<Props>(), {
+const {isAuto, imgs, interval, transition } = withDefaults(defineProps<Props>(), {
     isAuto: false,
-    imgs: () => []
+    imgs: () => [],
+    interval: 4000,
+    transition: 0.3
 })
 
 const currIdx = ref(0)
@@ -75,9 +81,32 @@ const exImages: Img[] = [
     { url: 'https://res.cloudinary.com/dvirco123/image/upload/v1684320286/%D7%A6%D7%99%D7%9C%D7%95%D7%9D_%D7%9E%D7%A1%D7%9A_2022-03-22_234412_ag8ebf.png' },
 ]
 
-// const imgsFormat = computed(() => props.imgs?.length ? props.imgs : exImages )
+const imgsFormat = computed(() => imgs?.length ? imgs : exImages )
 
-const imgsFormat = computed<Img[]>(() => props.imgs?.length ? props.imgs : exImages)
+// const imgsFormat = computed<Img[]>(() => props.imgs?.length ? props.imgs : exImages)
+const showDir = computed(() => `${-100 * dir.value/*  * -1 */}%` )
+const hideDir = computed(() => `${100 * dir.value}%` )
+
+const transitionTime = computed(() => `${transition}s` )
+// function testItem<T extends ''>(item: T) {
+//     // const t:T = 'ts'
+//     if(!item) throw new Error("Item not found")
+//     return item
+// }
+// const testedItem = testItem<Img[]>(imgsFormat.value)
+// imgsFormat.value
+// testedItem
+var intervalId!: number
+
+onMounted(() => {
+    if (isAuto) intervalId = setInterval(() => {
+        toRight()
+    }, interval)
+})
+
+onUnmounted(() => {
+    clearInterval(intervalId)
+})
 
 const toLeft = () => {
     console.log('left')
@@ -114,6 +143,7 @@ const selectImg = (idx: number) => {
     height: 400px;
     background-color: gray;
     overflow: hidden;
+    border-radius: 10px;
 
     ul {
         flex-wrap: nowrap;
@@ -129,26 +159,47 @@ const selectImg = (idx: number) => {
         object-position: center;
 
         &.show {
-            animation: show .3s ease-in-out;
+            // animation: show .3s ease-in-out;
+            animation: show v-bind(transitionTime) ease-in-out;
         }
 
         &.hide {
             opacity: 0;
-            animation: hide .3s ease-in-out;
+            // animation: hide .3s ease-in-out;
+            animation: hide v-bind(transitionTime) ease-in-out;
         }
     }
 }
 
-.curr-btn {
-    background-color: brown;
+.btns {
+    position: absolute;
+    top: 90%;
+    left: 50%;
+    translate: -50% ;
+    z-index: 10;
+    gap: 6px;
+
+    .btn {
+        cursor: pointer;
+        background-color: #ffffff7e;
+        border-radius: 50%;
+        width: 10px;
+        height: 10px;
+        
+        &.curr-btn {
+            background-color: white;
+        }
+    }
 }
+
 
 @keyframes show {
     0% {
         opacity: 1;
-        translate: var(--show);
+        // translate: var(--show);
+        translate: v-bind(showDir);
     }
-
+    
     100% {
         translate: 0;
     }
@@ -159,10 +210,11 @@ const selectImg = (idx: number) => {
         opacity: 1;
         translate: 0;
     }
-
+    
     99% {
         opacity: 1;
-        translate: var(--hide);
+        // translate: var(--hide);
+        translate: v-bind(hideDir);
     }
 
     100% {
@@ -188,14 +240,22 @@ const selectImg = (idx: number) => {
 
 .arrows {
     position: absolute;
-    top: 80%;
-    left: 50%;
-    translate: -50%;
+    top: 50%;
+    // left: 50%;
+    translate: 0 -50%;
+    width: 100%;
 
     .arrow {
         width: 60px;
         height: 60px;
         cursor: pointer;
+        border-radius: 50%;
+        
+        svg {
+            path {
+                fill: white;
+            }
+        }
 
         &:hover {
             background-color: rgba(0, 0, 0, 0.12);
