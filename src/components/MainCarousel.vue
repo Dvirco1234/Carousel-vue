@@ -4,7 +4,7 @@
         <ul class="clean-list flxex">
             <li v-for="(img, idx) in imgsFormat" :key="idx" ref="imgWrapper">
                 <img class="carousel-img" ref="img" :src="img.url"
-                    :class="{ show: currIdx === idx, hide: currIdx !== idx, 'hide-before': idx < currIdx, 'hide-after': idx > currIdx, first: !idx, last: idx === imgs.length - 1, 'no-trasition': isEnd }">
+                    :class="{ show: currIdx === idx, hide: currIdx !== idx }">
             </li>
         </ul>
         <div class="btns flex">
@@ -61,7 +61,7 @@ interface Props {
     transition: number
 }
 
-const {isAuto, imgs, interval, transition } = withDefaults(defineProps<Props>(), {
+const { isAuto, imgs, interval, transition } = withDefaults(defineProps<Props>(), {
     isAuto: false,
     imgs: () => [],
     interval: 4000,
@@ -70,7 +70,7 @@ const {isAuto, imgs, interval, transition } = withDefaults(defineProps<Props>(),
 
 const currIdx = ref(0)
 const dir = ref(1)
-const isEnd = ref(false)
+
 const img = ref(null)
 const imgWrapper = ref(null)
 const exImages: Img[] = [
@@ -96,7 +96,7 @@ const transitionTime = computed(() => `${transition}s` )
 // const testedItem = testItem<Img[]>(imgsFormat.value)
 // imgsFormat.value
 // testedItem
-var intervalId!: number
+let intervalId!: number
 
 onMounted(() => {
     if (isAuto) intervalId = setInterval(() => {
@@ -109,7 +109,6 @@ onUnmounted(() => {
 })
 
 const toLeft = () => {
-    console.log('left')
     dir.value = 1
     if (!currIdx.value) {
         currIdx.value = imgsFormat.value.length - 1
@@ -117,7 +116,6 @@ const toLeft = () => {
     else currIdx.value--
 }
 const toRight = () => {
-    console.log('right')
     dir.value = -1
     if (currIdx.value === imgsFormat.value.length - 1) {
         currIdx.value = 0
