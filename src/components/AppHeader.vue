@@ -64,7 +64,7 @@ const toggleDropdown = () => {
             translate: -50% -50%;
             // background-color: gold;
             background-color: #fff;
-            box-shadow: -3px -3px 4px 0 rgba(0, 0, 0, 0.203);
+            box-shadow: -2px -2px 3px 0 rgba(0, 0, 0, 0.203);
         }
 
 
