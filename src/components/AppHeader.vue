@@ -51,6 +51,7 @@ const toggleDropdown = () => {
         outline: none;
         // position: absolute;
         top: 110%;
+        z-index: 100;
         // position: relative;
         // left: 20px;
         &::after {
