@@ -10,7 +10,7 @@ import MainCarousel from './components/MainCarousel.vue'
   // import HelloWorld from './components/HelloWorld.vue'
 </script>
 
-<style lang="scss">
+<!-- <style lang="scss">
 .wrapper {
   padding: 10px;
   // display: grid;
@@ -30,4 +30,4 @@ import MainCarousel from './components/MainCarousel.vue'
     }
   }
 }
-</style>
+</style> -->
